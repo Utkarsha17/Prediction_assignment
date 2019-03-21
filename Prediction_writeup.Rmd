@@ -1,0 +1,131 @@
+---
+title: "Prediction"
+author: "Utkarsha Patil"
+date: "March 18, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Background
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement - a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, your goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. More information is available from the website here: http://groupware.les.inf.puc-rio.br/har (see the section on the Weight Lifting Exercise Dataset).
+
+## Data
+
+The training data for this project are available here:
+
+https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv
+
+The test data are available here:
+
+https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv
+
+## Project Goal
+The goal of the project is to predict the manner in which they did the exercise. This is the "classe" variable in the training set. 
+
+Create a report describing how model is built, how cross validation is used, what sample error does mean, why the choices are made and by using prediction model to predict 20 different test cases.
+
+## Data processing 
+
+```{r}
+# loading reqyuired libraries
+library(dplyr)
+library(caret)
+library(plyr)
+library(gbm)
+library(randomForest)
+library(rpart)
+library(rpart.plot)
+library(RColorBrewer)
+library(rattle)
+```
+
+```{r}
+# Downloading Training data from given URL
+download.file(url = "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv", 
+              destfile = "./pml-training.csv", method = "curl")
+
+train <- read.csv("./pml-training.csv", na.strings=c("NA","#DIV/0!",""))
+
+# Download the testing data from given URL
+download.file(url = "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv", 
+              destfile = "./pml-testing.csv", method = "curl")
+
+test <- read.csv("./pml-testing.csv", na.strings=c("NA","#DIV/0!",""))
+```
+
+```{r}
+#Removing the first 7 rows and all NAs which are related to the time series
+data<-names(test[,colMeans(is.na(test))==0])[8:59]
+
+#Use the filter applying to clean both data sets and make sure both have same variables for analysis.
+
+train<- train[,c(data,"classe")]
+test<-test[,c(data,"problem_id")]
+
+#Separate train dataset to increase performance and accuracy
+inTrain<- createDataPartition(train$classe, p=0.7, list=FALSE)
+trtest<- train[inTrain, ]
+ttest<- train[-inTrain, ]
+```
+
+## Analysis and Prediction model
+
+1.Considering K-fold cross validation for 10 iterations to create partitions of sample datasets (Validation sets). After fitting a model on to the training data, its performance is measured against each validation set and then averaged, gaining a better assessment of how the model will perform when asked to predict for new observations.
+
+```{r}
+control <- trainControl(method="cv", number=10)
+metric <- "Accuracy"
+```
+
+2. Consider linear model at first
+```{r}
+set.seed(10)
+linear <- train(classe~., data=trtest, method="lda", metric=metric, trControl=control)
+```
+
+3. k-Nearest Neighbors
+
+```{r}
+set.seed(10)
+knn <- train(classe~., data=trtest, method="knn", metric=metric, trControl=control)
+
+```
+
+4. Random Forest
+
+```{r}
+set.seed(10)
+rf <- train(classe~., data=trtest, method="rf", metric=metric, trControl=control)
+
+```
+
+5. Now checking performance of above all models
+
+```{r}
+results <- resamples(list(lda=linear, knn=knn, rf=rf))
+summary(results)
+```
+
+6. Check the predictions of the models and apply them to the test part of the train data set to check its performance
+```{r}
+predictLDA <- predict(linear, newdata=ttest)
+confMatLDA <- confusionMatrix(predictLDA, ttest$classe)
+
+predictKNN <- predict(knn, newdata=ttest)
+confMatKNN <- confusionMatrix(predictKNN, ttest$classe)
+
+
+predictRF <- predict(rf, newdata=ttest)
+confMatRF <- confusionMatrix(predictRF, ttest$classe)
+
+performance <- matrix(round(c(confMatLDA$overall,confMatKNN$overall,confMatRF$overall),3), ncol=3)
+colnames(performance)<-c('Linear Discrimination Analysis (LDA)', 'K- Nearest Neighbors (KNN)','Random Forest (RF)')
+performance.table <- as.table(performance)
+print(performance.table)
+```
+
+7. After comparing all models, random forest provides better accuracy. In random forest model, higher number of nodes give high accuracy results. Hence this model is appropriate for this case.
+ 
