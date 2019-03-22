@@ -2,7 +2,14 @@
 title: "Prediction"
 author: "Utkarsha Patil"
 date: "March 18, 2019"
-output: html_document
+output:
+  md_document: default
+  pdf_document: default
+  word_document: default
+  html_document: 
+    fig_caption: yes
+    keep_md: yes
+    toc: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -113,19 +120,33 @@ summary(results)
 ```{r}
 predictLDA <- predict(linear, newdata=ttest)
 confMatLDA <- confusionMatrix(predictLDA, ttest$classe)
+confMatLDA
+```
+```{r}
 
 predictKNN <- predict(knn, newdata=ttest)
 confMatKNN <- confusionMatrix(predictKNN, ttest$classe)
+confMatKNN
+```
 
-
+```{r}
 predictRF <- predict(rf, newdata=ttest)
 confMatRF <- confusionMatrix(predictRF, ttest$classe)
-
+confMatRF
+```
+```{r}
 performance <- matrix(round(c(confMatLDA$overall,confMatKNN$overall,confMatRF$overall),3), ncol=3)
 colnames(performance)<-c('Linear Discrimination Analysis (LDA)', 'K- Nearest Neighbors (KNN)','Random Forest (RF)')
 performance.table <- as.table(performance)
 print(performance.table)
 ```
 
+
 7. After comparing all models, random forest provides better accuracy. In random forest model, higher number of nodes give high accuracy results. Hence this model is appropriate for this case.
  
+8. Now, applying prediction model to testing data.
+
+```{r}
+prediction <- predict(rf, test)
+prediction
+```
