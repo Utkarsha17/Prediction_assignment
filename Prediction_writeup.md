@@ -202,15 +202,15 @@ model will perform when asked to predict for new observations.
     ## 
     ## Accuracy 
     ##          Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
-    ## lda 0.6885007 0.6959765 0.7024763 0.7027736 0.7068558 0.7219796    0
-    ## knn 0.8915575 0.8931366 0.8948328 0.8969946 0.8993814 0.9089585    0
-    ## rf  0.9890750 0.9919898 0.9930808 0.9929383 0.9939956 0.9963610    0
+    ## lda 0.6919155 0.6986900 0.7054975 0.7059026 0.7124658 0.7243636    0
+    ## knn 0.8886463 0.8926299 0.8988365 0.8974311 0.9015111 0.9046579    0
+    ## rf  0.9883552 0.9905334 0.9927246 0.9921383 0.9934450 0.9956300    0
     ## 
     ## Kappa 
     ##          Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
-    ## lda 0.6058573 0.6157191 0.6241689 0.6240005 0.6290342 0.6487601    0
-    ## knn 0.8628974 0.8645274 0.8669405 0.8696579 0.8727412 0.8847291    0
-    ## rf  0.9861791 0.9898681 0.9912471 0.9910675 0.9924072 0.9953971    0
+    ## lda 0.6100082 0.6187993 0.6273626 0.6278183 0.6357730 0.6507434    0
+    ## knn 0.8590665 0.8641893 0.8718681 0.8702162 0.8754941 0.8794071    0
+    ## rf  0.9852646 0.9880236 0.9907969 0.9900545 0.9917096 0.9944736    0
 
 1.  Check the predictions of the models and apply them to the test part
     of the train data set to check its performance
@@ -219,13 +219,111 @@ model will perform when asked to predict for new observations.
 
     predictLDA <- predict(linear, newdata=ttest)
     confMatLDA <- confusionMatrix(predictLDA, ttest$classe)
+    confMatLDA
+
+    ## Confusion Matrix and Statistics
+    ## 
+    ##           Reference
+    ## Prediction    A    B    C    D    E
+    ##          A 1358  173  115   66   47
+    ##          B   37  714  109   39  201
+    ##          C  141  162  652  106   85
+    ##          D  135   49  124  711  100
+    ##          E    3   41   26   42  649
+    ## 
+    ## Overall Statistics
+    ##                                          
+    ##                Accuracy : 0.694          
+    ##                  95% CI : (0.682, 0.7057)
+    ##     No Information Rate : 0.2845         
+    ##     P-Value [Acc > NIR] : < 2.2e-16      
+    ##                                          
+    ##                   Kappa : 0.6126         
+    ##  Mcnemar's Test P-Value : < 2.2e-16      
+    ## 
+    ## Statistics by Class:
+    ## 
+    ##                      Class: A Class: B Class: C Class: D Class: E
+    ## Sensitivity            0.8112   0.6269   0.6355   0.7376   0.5998
+    ## Specificity            0.9048   0.9187   0.8983   0.9171   0.9767
+    ## Pos Pred Value         0.7720   0.6491   0.5689   0.6354   0.8528
+    ## Neg Pred Value         0.9234   0.9112   0.9211   0.9469   0.9155
+    ## Prevalence             0.2845   0.1935   0.1743   0.1638   0.1839
+    ## Detection Rate         0.2308   0.1213   0.1108   0.1208   0.1103
+    ## Detection Prevalence   0.2989   0.1869   0.1947   0.1901   0.1293
+    ## Balanced Accuracy      0.8580   0.7728   0.7669   0.8273   0.7882
 
     predictKNN <- predict(knn, newdata=ttest)
     confMatKNN <- confusionMatrix(predictKNN, ttest$classe)
+    confMatKNN
 
+    ## Confusion Matrix and Statistics
+    ## 
+    ##           Reference
+    ## Prediction    A    B    C    D    E
+    ##          A 1599   72   18   11   22
+    ##          B   22  969   35   10   34
+    ##          C   20   36  930   64   44
+    ##          D   29   36   26  862   35
+    ##          E    4   26   17   17  947
+    ## 
+    ## Overall Statistics
+    ##                                           
+    ##                Accuracy : 0.9018          
+    ##                  95% CI : (0.8939, 0.9093)
+    ##     No Information Rate : 0.2845          
+    ##     P-Value [Acc > NIR] : < 2.2e-16       
+    ##                                           
+    ##                   Kappa : 0.8757          
+    ##  Mcnemar's Test P-Value : < 2.2e-16       
+    ## 
+    ## Statistics by Class:
+    ## 
+    ##                      Class: A Class: B Class: C Class: D Class: E
+    ## Sensitivity            0.9552   0.8507   0.9064   0.8942   0.8752
+    ## Specificity            0.9708   0.9787   0.9662   0.9744   0.9867
+    ## Pos Pred Value         0.9286   0.9056   0.8501   0.8725   0.9367
+    ## Neg Pred Value         0.9820   0.9647   0.9800   0.9792   0.9723
+    ## Prevalence             0.2845   0.1935   0.1743   0.1638   0.1839
+    ## Detection Rate         0.2717   0.1647   0.1580   0.1465   0.1609
+    ## Detection Prevalence   0.2926   0.1818   0.1859   0.1679   0.1718
+    ## Balanced Accuracy      0.9630   0.9147   0.9363   0.9343   0.9310
 
     predictRF <- predict(rf, newdata=ttest)
     confMatRF <- confusionMatrix(predictRF, ttest$classe)
+    confMatRF
+
+    ## Confusion Matrix and Statistics
+    ## 
+    ##           Reference
+    ## Prediction    A    B    C    D    E
+    ##          A 1672    7    0    0    0
+    ##          B    1 1130    0    0    1
+    ##          C    0    1 1018   15    0
+    ##          D    0    1    8  949    6
+    ##          E    1    0    0    0 1075
+    ## 
+    ## Overall Statistics
+    ##                                          
+    ##                Accuracy : 0.993          
+    ##                  95% CI : (0.9906, 0.995)
+    ##     No Information Rate : 0.2845         
+    ##     P-Value [Acc > NIR] : < 2.2e-16      
+    ##                                          
+    ##                   Kappa : 0.9912         
+    ##  Mcnemar's Test P-Value : NA             
+    ## 
+    ## Statistics by Class:
+    ## 
+    ##                      Class: A Class: B Class: C Class: D Class: E
+    ## Sensitivity            0.9988   0.9921   0.9922   0.9844   0.9935
+    ## Specificity            0.9983   0.9996   0.9967   0.9970   0.9998
+    ## Pos Pred Value         0.9958   0.9982   0.9845   0.9844   0.9991
+    ## Neg Pred Value         0.9995   0.9981   0.9984   0.9970   0.9985
+    ## Prevalence             0.2845   0.1935   0.1743   0.1638   0.1839
+    ## Detection Rate         0.2841   0.1920   0.1730   0.1613   0.1827
+    ## Detection Prevalence   0.2853   0.1924   0.1757   0.1638   0.1828
+    ## Balanced Accuracy      0.9986   0.9958   0.9945   0.9907   0.9967
 
     performance <- matrix(round(c(confMatLDA$overall,confMatKNN$overall,confMatRF$overall),3), ncol=3)
     colnames(performance)<-c('Linear Discrimination Analysis (LDA)', 'K- Nearest Neighbors (KNN)','Random Forest (RF)')
@@ -233,18 +331,18 @@ model will perform when asked to predict for new observations.
     print(performance.table)
 
     ##   Linear Discrimination Analysis (LDA) K- Nearest Neighbors (KNN)
-    ## A                                0.698                      0.911
-    ## B                                0.618                      0.887
-    ## C                                0.686                      0.903
-    ## D                                0.710                      0.918
+    ## A                                0.694                      0.902
+    ## B                                0.613                      0.876
+    ## C                                0.682                      0.894
+    ## D                                0.706                      0.909
     ## E                                0.284                      0.284
     ## F                                0.000                      0.000
     ## G                                0.000                      0.000
     ##   Random Forest (RF)
-    ## A              0.994
-    ## B              0.992
-    ## C              0.992
-    ## D              0.996
+    ## A              0.993
+    ## B              0.991
+    ## C              0.991
+    ## D              0.995
     ## E              0.284
     ## F              0.000
     ## G
@@ -252,3 +350,13 @@ model will perform when asked to predict for new observations.
 1.  After comparing all models, random forest provides better accuracy.
     In random forest model, higher number of nodes give high accuracy
     results. Hence this model is appropriate for this case.
+
+2.  Now, applying prediction model to testing data.
+
+<!-- -->
+
+    prediction <- predict(rf, test)
+    prediction
+
+    ##  [1] B A B A A E D B A A B C B A E E A B B B
+    ## Levels: A B C D E
